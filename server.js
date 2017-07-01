@@ -3,10 +3,10 @@
 const net = require('net');
 
 const server = net.createServer((connection) => {
-  console.log('Connection successful');
+  connection.write('Echo server\n');
+  connection.pipe(connection);
+  connection.on('data', (data) => {
 });
-server.on('error', (err) => {
-  console.log(err);
 });
 
 // listening to client
