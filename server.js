@@ -1,13 +1,15 @@
 /* jshint esversion: 6 */
 
-const fs = require('fs');
 const net = require('net');
 
-const server = net.createServer( (connection) => {
-  console.log('client connected');
-
+const server = net.createServer((connection) => {
+  console.log('Connection successful');
+});
+server.on('error', (err) => {
+  console.log(err);
 });
 
-server.listen({port: 3000}, () => {
-  console.log('You are connected.');
+// listening to client
+server.listen({port: 6969, host: '0.0.0.0'}, () => {
+  console.log('Server listening on port 6969');
 });
