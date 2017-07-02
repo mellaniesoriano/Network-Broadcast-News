@@ -1,18 +1,16 @@
 /*jshint esversion: 6*/
 const net = require('net');
 
-const server = require('./server.js');
-
-var client = new net.Socket();
-client.connect({port: 6969, host: '0.0.0.0'}, () => {
+const client = net.connect(6969, '0.0.0.0', () => {
   console.log('new connection');
-  client.write('Hello server!');
-});
 
-client.on('data', (data) => {
-  console.log(`Received:  ${data}`);
-});
+  // writes msg to server
+  process.stdin.on('data', (chunk) => {
+    client.write(chunk);
+  });
 
-client.on('close', () => {
-  console.log('Connection closed');
+  // receives msg from server
+  client.on('data', (chunk) => {
+    console.log(chunk.toString());
+  });
 });
