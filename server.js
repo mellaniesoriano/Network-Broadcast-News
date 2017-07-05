@@ -4,22 +4,27 @@ const net = require('net');
 
 const clients = [];
 const changeUsername = [];
-const userMenu = `
+const chatLog = [];
+
+const userMenu = `[ USER MENU ]
   @ : Change Username : '@sample'
+  * : Send Direct Msg To User : '#Username Message'
+`;
+
+const adminMenu = `[ ADMIN MENU ]
+  ! : Kick User : '!Username'
 `;
 
 
 const server = net.createServer((connection) => {
-  connection.userName = `User# ${clients.length}`;
+  server.userName = '[ADMIN]';
+  connection.userName = `User #${clients.length}`;
+  clients.push(connection);
 
-  // var testing = changeUsername.push(connection.userName);
-  // console.log('changeUserArr..', testing);
-
-  connection.write(`*** Welcome  *** \n Get started with menu : \n ${userMenu}`);
+  connection.write(`*** Welcome To The Chatroom *** \n ${userMenu}`);
 
   connection.on('data', (chunk) => {
-    data = changeUsername.slice(1, -1);
-    console.log(`Server From Client: ${chunk}`);
+    console.log(`Msg from ${connection.userName}: ${chunk}`);
 
     switch(chunk.toString().charAt(0)) {
       case '@':
@@ -29,27 +34,36 @@ const server = net.createServer((connection) => {
           connection.userName = chunk.toString().slice(1, chunk.length -1);
         }
       });
-      } // end switch statement
+      break;
+      default:
+      clients.forEach( (element) => {
+        element.write(`${connection.userName}: ${chunk}`);
+        });
+      }// end switch statement
     });
 
-
-
-  clients.push(connection);
-
-  connection.on('data', (chunk, sender) => {
-    clients.forEach( (client) => {
-      if (client === sender) {
-        return;
-      } else {
-        client.write(`${connection.userName} : ${chunk}`);
-      }
-    });
-  });
-
-  console.log(clients.length);
 }); // createServer ends
+
+process.stdin.on('data', (chunk) => {
+  switch (chunk.toString().charAt(0)) {
+    case '!' :
+    clients.filter( (element) => {
+      return element.userName === chunk.toString().slice(1, -1);
+    })
+    .forEach( (element) => {
+      clients.splice(clients.indexOf(element, 1));
+      element.end(`${server.userName}: You have been kicked!`);
+    });
+    break;
+
+    default:
+    clients.forEach( (client) => {
+      client.write(`${server.userName}: ${chunk}`);
+    });
+  } // end switch statement
+});
 
 // listening to client
 server.listen(6969, '0.0.0.0', () => {
-  console.log('Server listening on port 6969');
+  console.log(`Server listening on port 6969 \n ${adminMenu}`);
 });
