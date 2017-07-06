@@ -4,11 +4,9 @@ const net = require('net');
 
 const clients = [];
 const changeUsername = [];
-const chatLog = [];
 
 const userMenu = `[ USER MENU ]
-  @ : Change Username : '@sample'
-  * : Send Direct Msg To User : '#Username Message'
+  @ : Change Username : '@sampleUsername'
 `;
 
 const adminMenu = `[ ADMIN MENU ]
@@ -29,7 +27,9 @@ const server = net.createServer((connection) => {
     switch(chunk.toString().charAt(0)) {
       case '@':
       clients.forEach( (element) => {
-        if (element === connection) {
+        if (element.userName === chunk.toString().slice(1, chunk.length -1).indexOf('admin') !== -1) {
+          element.write('Changing username to ADMIN is not permitted!!');
+        } else {
           changeUsername.push(`${connection.userName}: ${chunk.toString()}`);
           connection.userName = chunk.toString().slice(1, chunk.length -1);
         }
@@ -48,7 +48,7 @@ process.stdin.on('data', (chunk) => {
   switch (chunk.toString().charAt(0)) {
     case '!' :
     clients.filter( (element) => {
-      return element.userName === chunk.toString().slice(1, -1);
+      return element.userName === chunk.toString().slice(1, chunk.length -1);
     })
     .forEach( (element) => {
       clients.splice(clients.indexOf(element, 1));
