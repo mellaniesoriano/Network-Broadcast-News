@@ -1,6 +1,6 @@
 const net = require('net');
 
-const client = net.connect(3000, '0.0.0.0', () => {
+const client = net.connect(6969, '0.0.0.0', () => {
   // writes msg to server
   process.stdin.on('data', chunk => {
     client.write(chunk);

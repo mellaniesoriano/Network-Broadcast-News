@@ -122,7 +122,7 @@ const server = net.createServer(connection => {
 });
 
 server.listen({
-    port: 3000
+    port: 6969
   },
   () => {
     console.log(`Connection is ON\n${adminTools}`);
